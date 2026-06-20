@@ -1,10 +1,11 @@
 import Router from "@/system/router";
+import ThemeProvider from "@/system/ThemeProvider";
 
 const App = () => {
   return (
-    <div>
+    <ThemeProvider>
       <Router />
-    </div>
+    </ThemeProvider>
   );
 };
 export default App;
