@@ -6,16 +6,11 @@ import { useAppSelector } from "@/state/hooks";
 const AuthLayout = () => {
   const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
   const [searchParams] = useSearchParams();
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "/dashboard";
 
   if (isAuthenticated) return <Navigate to={next} replace />;
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      {/* Shared chrome for auth pages goes here (branding, background, etc.) */}
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 };
 
 export default AuthLayout;

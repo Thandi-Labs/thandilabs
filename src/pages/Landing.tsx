@@ -1,6 +1,7 @@
 import { accentMap, NAV_LINKS, PRODUCTS, STATS, WHY } from "@/data/landing";
 import ThemeToggle from "@/components/ThemeToggle";
 import { ArrowRight, ChevronRight } from "lucide-react";
+import Logo from "@/components/parts/Logo";
 
 const Landing = () => {
   return (
@@ -8,9 +9,7 @@ const Landing = () => {
       {/* ── Navbar ── */}
       <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 backdrop-blur-md dark:border-white/5 dark:bg-zinc-950/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-lg font-semibold tracking-tight">
-            Thandi<span className="text-emerald-500 dark:text-emerald-400">Labs</span>
-          </span>
+          <Logo />
 
           <nav className="hidden items-center gap-8 md:flex">
             {NAV_LINKS.map(({ label, href }) => (
@@ -57,7 +56,9 @@ const Landing = () => {
           <h1 className="mb-6 text-5xl font-semibold leading-[1.1] tracking-tight text-zinc-900 dark:text-white md:text-6xl lg:text-7xl">
             Automation &amp; fintech
             <br />
-            <span className="text-zinc-400 dark:text-zinc-400">for the real world.</span>
+            <span className="text-zinc-400 dark:text-zinc-400">
+              for the real world.
+            </span>
           </h1>
 
           <p className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-lg">
@@ -91,7 +92,9 @@ const Landing = () => {
               <p className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                 {value}
               </p>
-              <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">{label}</p>
+              <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+                {label}
+              </p>
             </div>
           ))}
         </div>
@@ -111,48 +114,65 @@ const Landing = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {PRODUCTS.map(({ icon: Icon, accent, label, tag, description, features, span }) => {
-            const a = accentMap[accent];
-            return (
-              <div
-                key={label}
-                className={`group relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-all duration-300 hover:bg-zinc-100 dark:border-white/[0.07] dark:bg-white/[0.03] dark:hover:bg-white/[0.05] ${a.border} ${span}`}
-              >
+          {PRODUCTS.map(
+            ({
+              icon: Icon,
+              accent,
+              label,
+              tag,
+              description,
+              features,
+              span,
+            }) => {
+              const a = accentMap[accent];
+              return (
                 <div
-                  className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white transition-all duration-300 dark:border-white/10 dark:bg-white/[0.05] ${a.bg}`}
+                  key={label}
+                  className={`group relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-all duration-300 hover:bg-zinc-100 dark:border-white/[0.07] dark:bg-white/[0.03] dark:hover:bg-white/[0.05] ${a.border} ${span}`}
                 >
-                  <Icon className={`h-5 w-5 ${a.icon}`} />
+                  <div
+                    className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white transition-all duration-300 dark:border-white/10 dark:bg-white/[0.05] ${a.bg}`}
+                  >
+                    <Icon className={`h-5 w-5 ${a.icon}`} />
+                  </div>
+
+                  <span
+                    className={`mb-3 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${a.tag}`}
+                  >
+                    {tag}
+                  </span>
+
+                  <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+                    {label}
+                  </h3>
+                  <p className="mb-5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                    {description}
+                  </p>
+
+                  <ul className="space-y-2">
+                    {features.map((f) => (
+                      <li
+                        key={f}
+                        className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400"
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 shrink-0 rounded-full ${a.dot}`}
+                        />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <a
+                    href="#"
+                    className={`mt-6 flex items-center gap-1 text-sm font-medium ${a.icon} opacity-0 transition-all duration-200 group-hover:opacity-100`}
+                  >
+                    Learn more <ChevronRight className="h-3.5 w-3.5" />
+                  </a>
                 </div>
-
-                <span className={`mb-3 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${a.tag}`}>
-                  {tag}
-                </span>
-
-                <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
-                  {label}
-                </h3>
-                <p className="mb-5 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  {description}
-                </p>
-
-                <ul className="space-y-2">
-                  {features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${a.dot}`} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="#"
-                  className={`mt-6 flex items-center gap-1 text-sm font-medium ${a.icon} opacity-0 transition-all duration-200 group-hover:opacity-100`}
-                >
-                  Learn more <ChevronRight className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            );
-          })}
+              );
+            },
+          )}
         </div>
       </section>
 
@@ -179,8 +199,12 @@ const Landing = () => {
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-white/[0.05]">
                   <Icon className="h-5 w-5 text-zinc-500 dark:text-zinc-300" />
                 </div>
-                <h3 className="mb-2 font-semibold text-zinc-900 dark:text-white">{title}</h3>
-                <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{body}</p>
+                <h3 className="mb-2 font-semibold text-zinc-900 dark:text-white">
+                  {title}
+                </h3>
+                <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                  {body}
+                </p>
               </div>
             ))}
           </div>
@@ -199,7 +223,8 @@ const Landing = () => {
                 Ready to automate?
               </h2>
               <p className="mb-8 text-zinc-500 dark:text-zinc-400">
-                Join businesses across Kenya running on Thandi Labs infrastructure.
+                Join businesses across Kenya running on Thandi Labs
+                infrastructure.
               </p>
               <a
                 href="/login"
@@ -217,7 +242,7 @@ const Landing = () => {
       <footer className="border-t border-zinc-100 px-6 py-10 dark:border-white/5">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-zinc-400 dark:text-zinc-500 md:flex-row">
           <span>
-            Thandi<span className="text-emerald-500 dark:text-emerald-400">Labs</span>{" "}
+            <Logo />
             &copy; {new Date().getFullYear()}
           </span>
           <div className="flex gap-6">

@@ -4,6 +4,8 @@ import AuthLayout from "@/layouts/AuthLayout";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -13,7 +15,11 @@ const router = createBrowserRouter([
   },
   {
     element: <AuthLayout />,
-    children: [{ path: "/login", element: <Login /> }],
+    children: [
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+    ],
   },
 ]);
 
