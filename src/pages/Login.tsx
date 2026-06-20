@@ -1,17 +1,44 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import AuthBranding from "@/components/AuthBranding";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useLoginMutation } from "@/state/api/authApi";
+import { useAppDispatch } from "@/state/hooks";
+import { login } from "@/state/slices/authSlice";
+
+function extractError(error: unknown): string {
+  if (!error) return "";
+  const e = error as { data?: { detail?: string | { msg: string }[] } };
+  const detail = e.data?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg).join(", ");
+  return "Sign in failed. Please try again.";
+}
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
+  const [loginMutation, { isLoading, error }] = useLoginMutation();
+
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", remember: false });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
-    // dispatch login action here
+    try {
+      const data = await loginMutation({ username: form.email, password: form.password }).unwrap();
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      dispatch(login({ id: "", name: "", email: form.email }));
+      navigate(searchParams.get("next") ?? "/dashboard", { replace: true });
+    } catch {
+      // error is captured by RTK Query and available via `error`
+    }
   };
+
+  const errorMessage = extractError(error);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -54,6 +81,13 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* API error */}
+              {errorMessage && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+                  {errorMessage}
+                </div>
+              )}
+
               {/* Email */}
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -119,10 +153,17 @@ const Login = () => {
 
               <button
                 type="submit"
-                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98]"
+                disabled={isLoading}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Sign in
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Sign in
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </>
+                )}
               </button>
             </form>
           </div>

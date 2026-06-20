@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  // Hydrate auth state from localStorage so sessions survive hard refresh
+  isAuthenticated: !!localStorage.getItem("access_token"),
   user: null,
 };
 
@@ -18,6 +19,8 @@ const authSlice = createSlice({
     logout(state) {
       state.isAuthenticated = false;
       state.user = null;
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
     },
   },
 });

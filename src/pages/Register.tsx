@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, Check, X, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Check, X, ArrowRight, Loader2 } from "lucide-react";
 import AuthBranding from "@/components/AuthBranding";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useRegisterMutation } from "@/state/api/authApi";
 
 const REQUIREMENTS = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -22,7 +23,19 @@ function getStrength(password: string) {
   return REQUIREMENTS.filter((r) => r.test(password)).length;
 }
 
+function extractError(error: unknown): string {
+  if (!error) return "";
+  const e = error as { data?: { detail?: string | { msg: string }[] } };
+  const detail = e.data?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg).join(", ");
+  return "Registration failed. Please try again.";
+}
+
 const Register = () => {
+  const navigate = useNavigate();
+  const [registerMutation, { isLoading, error }] = useRegisterMutation();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState({
@@ -38,10 +51,23 @@ const Register = () => {
   const passwordsMatch = form.confirm.length > 0 && form.password === form.confirm;
   const passwordsMismatch = form.confirm.length > 0 && form.password !== form.confirm;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
-    // dispatch register action here
+    if (passwordsMismatch) return;
+    try {
+      await registerMutation({
+        email: form.email,
+        username: form.email, // use email as username
+        password: form.password,
+        full_name: form.name,
+      }).unwrap();
+      navigate("/login?registered=1", { replace: true });
+    } catch {
+      // error captured by RTK Query
+    }
   };
+
+  const errorMessage = extractError(error);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -84,6 +110,13 @@ const Register = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* API error */}
+              {errorMessage && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+                  {errorMessage}
+                </div>
+              )}
+
               {/* Name */}
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -96,7 +129,7 @@ const Register = () => {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="Jane Wanjiku"
-                  className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
                 />
               </div>
 
@@ -112,7 +145,7 @@ const Register = () => {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
                 />
               </div>
 
@@ -129,7 +162,7 @@ const Register = () => {
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 pr-11 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 pr-11 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
                   />
                   <button
                     type="button"
@@ -167,8 +200,6 @@ const Register = () => {
                         </span>
                       )}
                     </div>
-
-                    {/* Requirements checklist */}
                     <ul className="grid grid-cols-2 gap-1">
                       {REQUIREMENTS.map(({ label, test }) => {
                         const met = test(form.password);
@@ -202,7 +233,7 @@ const Register = () => {
                     value={form.confirm}
                     onChange={(e) => setForm({ ...form, confirm: e.target.value })}
                     placeholder="••••••••"
-                    className={`w-full rounded-lg border px-4 py-2.5 pr-11 text-sm outline-none placeholder:text-zinc-400 transition-all duration-200 focus:ring-2 bg-white text-zinc-900 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-zinc-500 ${
+                    className={`w-full rounded-lg border px-4 py-2.5 pr-11 text-sm outline-none placeholder:text-zinc-400 transition-all duration-200 focus:ring-2 bg-white text-zinc-900 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-500 ${
                       passwordsMismatch
                         ? "border-red-400 focus:border-red-400 focus:ring-red-500/20 dark:border-red-500/60"
                         : passwordsMatch
@@ -235,22 +266,25 @@ const Register = () => {
                 />
                 <label htmlFor="terms" className="text-sm text-zinc-500 dark:text-zinc-400">
                   I agree to the{" "}
-                  <a href="#" className="text-emerald-600 hover:underline dark:text-emerald-400">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-emerald-600 hover:underline dark:text-emerald-400">
-                    Privacy Policy
-                  </a>
+                  <a href="#" className="text-emerald-600 hover:underline dark:text-emerald-400">Terms of Service</a>
+                  {" "}and{" "}
+                  <a href="#" className="text-emerald-600 hover:underline dark:text-emerald-400">Privacy Policy</a>
                 </label>
               </div>
 
               <button
                 type="submit"
-                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98]"
+                disabled={isLoading || passwordsMismatch}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create account
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Create account
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </>
+                )}
               </button>
             </form>
           </div>

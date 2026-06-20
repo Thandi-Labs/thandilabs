@@ -1,17 +1,34 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, MailCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, MailCheck, Loader2 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useForgotPasswordMutation } from "@/state/api/authApi";
+
+function extractError(error: unknown): string {
+  if (!error) return "";
+  const e = error as { data?: { detail?: string | { msg: string }[] } };
+  const detail = e.data?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg).join(", ");
+  return "Something went wrong. Please try again.";
+}
 
 const ForgotPassword = () => {
+  const [forgotPassword, { isLoading, error }] = useForgotPasswordMutation();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
-    // trigger password reset email here
-    setSubmitted(true);
+    try {
+      await forgotPassword({ email }).unwrap();
+      setSubmitted(true);
+    } catch {
+      // error captured by RTK Query
+    }
   };
+
+  const errorMessage = extractError(error);
 
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950">
@@ -45,6 +62,12 @@ const ForgotPassword = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {errorMessage && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+                    {errorMessage}
+                  </div>
+                )}
+
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                     Email address
@@ -56,16 +79,23 @@ const ForgotPassword = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98]"
+                  disabled={isLoading}
+                  className="group flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Send reset link
-                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      Send reset link
+                      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    </>
+                  )}
                 </button>
               </form>
             </>
