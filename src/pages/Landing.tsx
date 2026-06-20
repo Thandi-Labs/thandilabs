@@ -44,7 +44,7 @@ const Landing = () => {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden px-6 pb-24 pt-28 text-center">
         <div className="pointer-events-none absolute inset-0 flex items-start justify-center">
-          <div className="mt-10 h-[500px] w-[800px] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/10" />
+          <div className="mt-10 h-125 w-200 rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/10" />
         </div>
 
         <div className="relative mx-auto max-w-3xl">
@@ -85,7 +85,7 @@ const Landing = () => {
       </section>
 
       {/* ── Stats bar ── */}
-      <section className="border-y border-zinc-100 bg-zinc-50 dark:border-white/5 dark:bg-white/[0.02]">
+      <section className="border-y border-zinc-100 bg-zinc-50 dark:border-white/5 dark:bg-white/2">
         <div className="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-zinc-100 dark:divide-white/5 md:grid-cols-4">
           {STATS.map(({ value, label }) => (
             <div key={label} className="px-8 py-8 text-center">
@@ -128,10 +128,10 @@ const Landing = () => {
               return (
                 <div
                   key={label}
-                  className={`group relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-all duration-300 hover:bg-zinc-100 dark:border-white/[0.07] dark:bg-white/[0.03] dark:hover:bg-white/[0.05] ${a.border} ${span}`}
+                  className={`group relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-all duration-300 hover:bg-zinc-100 dark:border-white/[0.07] dark:bg-white/3 dark:hover:bg-white/5 ${a.border} ${span}`}
                 >
                   <div
-                    className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white transition-all duration-300 dark:border-white/10 dark:bg-white/[0.05] ${a.bg}`}
+                    className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-200 bg-white transition-all duration-300 dark:border-white/10 dark:bg-white/5 ${a.bg}`}
                   >
                     <Icon className={`h-5 w-5 ${a.icon}`} />
                   </div>
@@ -177,7 +177,7 @@ const Landing = () => {
       </section>
 
       {/* ── Why Thandi Labs ── */}
-      <section className="border-t border-zinc-100 bg-zinc-50 px-6 py-24 dark:border-white/5 dark:bg-white/[0.02]">
+      <section className="border-t border-zinc-100 bg-zinc-50 px-6 py-24 dark:border-white/5 dark:bg-white/2">
         <div className="mx-auto max-w-6xl">
           <div className="mb-14 max-w-xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
@@ -194,9 +194,9 @@ const Landing = () => {
             {WHY.map(({ icon: Icon, title, body }) => (
               <div
                 key={title}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-200 hover:border-zinc-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.03] dark:hover:border-white/[0.12] dark:hover:bg-white/[0.05]"
+                className="rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-200 hover:border-zinc-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/3 dark:hover:border-white/12 dark:hover:bg-white/5"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-white/[0.05]">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-white/5">
                   <Icon className="h-5 w-5 text-zinc-500 dark:text-zinc-300" />
                 </div>
                 <h3 className="mb-2 font-semibold text-zinc-900 dark:text-white">
