@@ -7,15 +7,26 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
+import ErrorPage from "@/pages/ErrorPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
+
+  // Authenticated routes
   {
     element: <MainLayout />,
-    children: [{ path: "/dashboard", element: <Dashboard /> }],
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "/dashboard", element: <Dashboard /> },
+      // Stub catch-all inside MainLayout — shows 404 within the authenticated shell
+      { path: "*", element: <ErrorPage /> },
+    ],
   },
+
+  // Auth routes
   {
     element: <AuthLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
@@ -23,6 +34,9 @@ const router = createBrowserRouter([
       { path: "/reset-password", element: <ResetPassword /> },
     ],
   },
+
+  // Top-level catch-all (public 404)
+  { path: "*", element: <ErrorPage /> },
 ]);
 
 const Router = () => <RouterProvider router={router} />;
