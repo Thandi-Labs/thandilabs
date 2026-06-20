@@ -8,7 +8,12 @@ import {
   Globe,
 } from "lucide-react";
 
-export const NAV_LINKS = ["Products", "Solutions", "Pricing", "Docs"];
+export const NAV_LINKS = [
+  { label: "Products", href: "#products" },
+  { label: "Solutions", href: "#" },
+  { label: "Pricing", href: "#" },
+  { label: "Docs", href: "#" },
+];
 
 export const PRODUCTS = [
   {

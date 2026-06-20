@@ -12,13 +12,13 @@ const Landing = () => {
           </span>
 
           <nav className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((l) => (
+            {NAV_LINKS.map(({ label, href }) => (
               <a
-                key={l}
-                href="#"
+                key={label}
+                href={href}
                 className="text-sm text-zinc-400 transition-colors duration-200 hover:text-white"
               >
-                {l}
+                {label}
               </a>
             ))}
           </nav>
