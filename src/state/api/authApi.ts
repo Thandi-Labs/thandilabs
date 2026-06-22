@@ -9,18 +9,12 @@ import type {
   VerifyTokenResponse,
 } from "@/types/auth";
 import type { Service } from "@/types/services";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithReauth } from "./baseQuery";
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_API_URL}/api/v1`,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("access_token");
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: ({ username, password, client_id = "", client_secret = "" }) => ({
