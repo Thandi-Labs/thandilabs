@@ -8,6 +8,7 @@ import type {
   ResetPasswordRequest,
   VerifyTokenResponse,
 } from "@/types/auth";
+import type { Service } from "@/types/services";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const authApi = createApi({
@@ -57,7 +58,10 @@ export const authApi = createApi({
       query: () => "/auth/verify-token",
     }),
 
-    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+    forgotPassword: builder.mutation<
+      { message: string },
+      ForgotPasswordRequest
+    >({
       query: (body) => ({
         url: "/auth/forgot-password",
         method: "POST",
@@ -72,6 +76,11 @@ export const authApi = createApi({
         body,
       }),
     }),
+
+    // Services
+    getMyServices: builder.query<Service[], void>({
+      query: () => `/services/`,
+    }),
   }),
 });
 
@@ -82,4 +91,7 @@ export const {
   useVerifyTokenQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+
+  // Services
+  useGetMyServicesQuery,
 } = authApi;
